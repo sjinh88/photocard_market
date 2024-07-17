@@ -6,19 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('register', '0001_initial'),
+        ("register", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PhotoCard',
+            name="PhotoCard",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('photo_card', models.ImageField(blank=True, upload_to='photo_card/')),
-                ('cnt', models.PositiveSmallIntegerField()),
-                ('create_date', models.DateTimeField(auto_now_add=True)),
-                ('update_date', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("photo_card", models.ImageField(blank=True, upload_to="photo_card/")),
+                ("cnt", models.PositiveSmallIntegerField()),
+                ("create_date", models.DateTimeField(auto_now_add=True)),
+                ("update_date", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

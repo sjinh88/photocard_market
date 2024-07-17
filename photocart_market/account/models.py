@@ -1,8 +1,10 @@
-from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin,
-                                        UserManager, AbstractUser)
+from django.contrib.auth.models import (AbstractBaseUser, AbstractUser,
+                                        PermissionsMixin, UserManager)
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from .managers import AccountManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -17,7 +19,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
-    objects = UserManager()
+    objects = AccountManager()
 
     EMAIL_FIELD = "email"
     # REQUIRED_FIELDS = ["email"]
@@ -45,9 +47,10 @@ class UserProfile(models.Model):
         indexes = [
             models.Index(fields=["-create_date"]),
         ]
-        
+
+
 class UserWallet(models.Model):
     user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
     cash = models.PositiveIntegerField(default=10000)
-    
+
     update_date = models.DateTimeField(auto_now=True)
