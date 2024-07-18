@@ -48,7 +48,7 @@ API_APPS = [
     "account",
     "buy",
     "sale",
-    "register",
+    "product",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + API_APPS
@@ -159,9 +159,6 @@ SIMPLE_JWT = {
     "USER_ID_CLAIM": "user_id",
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    # 'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-    # 'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    # 'TOKEN_TYPE_CLAIM': 'token_type',
-    # 'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-    # 'JTI_CLAIM': 'jti',
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
 }

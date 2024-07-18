@@ -5,8 +5,11 @@ from rest_framework.validators import UniqueValidator
 from .models import User
 
 
-# 회원가입 시리얼라이저
 class RegisterSerializer(serializers.ModelSerializer):
+    """
+    회원가입 serializer
+    """
+
     email = serializers.EmailField(
         required=True,
         validators=[
@@ -16,9 +19,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
-        validators=[validate_password],  # 비밀번호에 대한 검증
+        validators=[validate_password],  # 비밀번호 검증
     )
-    password2 = serializers.CharField(  # 비밀번호 확인을 위한 필드
+    password2 = serializers.CharField(  # 비밀번호 확인용
         write_only=True,
         required=True,
     )
@@ -37,8 +40,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data: dict) -> User:
-        # CREATE 요청에 대해 create 메서드를 오버라이딩하여,
-        # 유저를 생성하고 토큰도 생성하게 해준다.
         user = User.objects.create_user(
             email=validated_data["email"],
         )
@@ -49,15 +50,24 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
+    """
+    로그인 serializer
+    """
+
     email = serializers.EmailField(required=True)
     password = serializers.CharField(max_length=128, write_only=True)
     last_login = serializers.DateTimeField(read_only=True)
 
-    def validate(self, value):
+    def validate(self, value: dict) -> dict:
+        """
+        email 기반 user 검증
+        """
+        # email 존재 여부 확인
         user = User.objects.filter(email=value["email"])
         if not user.exists():
             raise serializers.ValidationError({"user": "회원가입이 필요합니다."})
 
+        # email 휴면 계정 여부 확인
         user = user.first()
         if not user.is_active:
             raise serializers.ValidationError({"user": "휴먼 계정입니다."})

@@ -5,15 +5,13 @@ from django.contrib.auth.models import UserManager
 
 class AccountManager(UserManager):
     """
-    UserManager를 상속받아 def 재정의
+    django.contrib.auth.models.UserManager는 username 기반으로 def를 정의함
+    username를 안쓰게끔 하기 위해 UserManager를 상속받아 def 재정의
     """
 
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
-        """
-        Create and save a user with the given email, and password.
-        """
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.password = make_password(password)
