@@ -1,5 +1,4 @@
-from django.contrib.auth.models import (AbstractBaseUser, AbstractUser,
-                                        PermissionsMixin, UserManager)
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -37,11 +36,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    phone_number = models.CharField(unique=True, max_length=13, null=False)
-    nickname = models.CharField(unique=True, max_length=13, null=False)
+    phone_number = models.CharField(
+        unique=True, max_length=13, null=False, help_text="핸드폰 번호"
+    )
+    nickname = models.CharField(
+        unique=True, max_length=13, null=False, help_text="닉네임"
+    )
 
-    create_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+    create_date = models.DateTimeField(auto_now_add=True, help_text="생성 일자")
+    update_date = models.DateTimeField(auto_now=True, help_text="정보 변경 일자")
 
     class Meta:
         indexes = [
@@ -51,6 +54,6 @@ class UserProfile(models.Model):
 
 class UserWallet(models.Model):
     user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
-    cash = models.PositiveIntegerField(default=10000)
+    cash = models.PositiveIntegerField(default=10000, help_text="사용가능 금액")
 
     update_date = models.DateTimeField(auto_now=True)
