@@ -1,0 +1,47 @@
+services:
+  photocard_market:
+    build: 
+      context: .
+      dockerfile: ./infra/dev/app/Dockerfile
+    container_name: photocard_market
+    command: > 
+      sh -c " python manage.py makemigrations && 
+              python manage.py migrate &&
+              uwsgi --ini /uwsgi.ini"
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.dev
+    volumes:
+      - ./infra:/photocard_market/infra
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./infra/dev/nginx/Dockerfile
+    container_name: market_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra:/photocard_market/infra
+
+  db:
+    platform: linux/x86_64
+    image: mysql:8.0
+    container_name: market_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'photomarket'   
+      MYSQL_USER: 'photomarket'
+      MYSQL_PASSWORD: 'photomarket'      
+      MYSQL_ROOT_PASSWORD: 'photomarket'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    ports:
+      - '3307:3306'
+    expose:
+      - '3307'
