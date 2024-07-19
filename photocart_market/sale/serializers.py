@@ -32,7 +32,8 @@ class SalePriceUpdateSerializer(SaleHistorySerializer):
     """
 
     fee = serializers.IntegerField(read_only=True)
-
+    renewal_date = serializers.DateTimeField(read_only=True)
+    
     class Meta:
         model = SaleHistorySerializer.Meta.model
         fields = [

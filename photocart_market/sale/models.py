@@ -1,15 +1,10 @@
 from account.models import User
 from django.db import models
 from product.models import PhotoCard
-
+from django.core.validators import MinValueValidator
+from .enums import State
 
 class SaleHistory(models.Model):
-
-    class State(models.TextChoices):
-        END = "E", "판매완료"
-        BEGIN = "B", "판매중"
-        START = "S", "등록"
-
     photo_card = models.ForeignKey(
         PhotoCard, related_name="photocard", on_delete=models.DO_NOTHING
     )
@@ -20,19 +15,22 @@ class SaleHistory(models.Model):
         User, related_name="sale_user", on_delete=models.DO_NOTHING
     )
 
-    price = models.PositiveIntegerField(help_text="1개당 가격")
+    price = models.PositiveIntegerField(
+        help_text="1개당 가격",
+        validators=[MinValueValidator(1)]
+    )
     fee = models.PositiveIntegerField()
 
     state = models.CharField(choices=State.choices, max_length=1, default=State.START)
 
     create_date = models.DateTimeField(auto_now_add=True)
-    renewal_date = models.DateTimeField(null=True)
+    renewal_date = models.DateTimeField(auto_now_add=True, null=True)
     sold_date = models.DateTimeField(null=True)
 
     class Meta:
         ordering = [
+            "id",
             "photo_card_id",
             "price",
             "renewal_date",
-            "id",
         ]

@@ -1,23 +1,28 @@
-from django.db.models import F, Q, Subquery
+from django.db.models import F, Q
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from product.models import PhotoCard
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
 
 from .models import SaleHistory
 from .serializers import (SaleDetailSerializer, SaleHistorySerializer,
                           SalePriceUpdateSerializer, SaleResigterSerializer)
 from .utils import fee_calculate
+from .enums import State
 
 
 class SaleRegisterAPIView(generics.CreateAPIView):
+    """
+    판매할 카드 등록
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = SaleResigterSerializer
 
+    @swagger_auto_schema(tags=["photocard/sale"])
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
 
@@ -30,17 +35,25 @@ class SaleRegisterAPIView(generics.CreateAPIView):
 
 
 class SalePriceUpdateAPIView(generics.UpdateAPIView):
+    """
+    판매 가격 변경
+    - 변경을 요청한 카드가 요청자가 생성한 카드인지 확인함
+    - 거래중 / 판매완료 상태일 때는 변경 불가
+    """
     permission_classes = [IsAuthenticated]
     queryset = SaleHistory.objects.all()
     serializer_class = SalePriceUpdateSerializer
-
+    
+    @swagger_auto_schema(tags=["photocard/sale"])
     def put(self, request, *args, **kwargs):
         # pk(photo_card_id)를 가격 수정을 요청한 사람이 등록했는지 확인
         instance = get_object_or_404(
-            self.queryset, id=kwargs["pk"], seller_id=request.user.id
+            self.queryset, 
+            id=kwargs["pk"], 
+            seller_id=request.user.id
         )
-        # E: 판매완료 / B : 판매중(거래중) -> 가격 변경 불가
-        if instance.state in ["E", "B"]:
+        # 판매완료 / 판매중(거래중) -> 가격 변경 불가
+        if instance.state in [State.END, State.BEGIN]:
             return Response(
                 data={
                     "message": "판매중이거나 판매완료된 상태는 가격 변경이 되지 않습니다."
@@ -48,16 +61,16 @@ class SalePriceUpdateAPIView(generics.UpdateAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # S : 등록 -> 가격 변경 가능
-        else:
-            serializer = self.get_serializer(instance, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(
-                fee=fee_calculate(request.data["price"]),
-                renewal_date=timezone.now(),
-            )
-            return Response(status=status.HTTP_200_OK)
+        # 판매 등록
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(
+            fee=fee_calculate(request.data["price"]),
+            renewal_date=timezone.now(),
+        )
+        return Response(status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(auto_schema=None)
     def patch(self, request, *args, **kwargs):
         # patch 요청은 사용 안함.
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -73,6 +86,7 @@ class SaleListAPIView(generics.ListAPIView):
     queryset = SaleHistory.objects.all()
     serializer_class = SaleHistorySerializer
 
+    @swagger_auto_schema(tags=["photocard/sale"])
     def get(self, request, *args, **kwargs):
         """
         현재 판매 가능한 포토카드 리스트 가져오기
@@ -84,7 +98,7 @@ class SaleListAPIView(generics.ListAPIView):
         """
         qs = (
             self.get_queryset()
-            .filter(state="S")
+            .filter(state=State.START)
             .annotate(
                 rnk=Window(
                     expression=RowNumber(),
@@ -107,18 +121,23 @@ class SaleListAPIView(generics.ListAPIView):
 
 
 class SaleDetailView(generics.RetrieveAPIView):
+    """
+    카드의 상세 정보
+    """
     permission_classes = [AllowAny]
     queryset = SaleHistory.objects.all()
     serializer_class = SaleDetailSerializer
 
+    @swagger_auto_schema(tags=["photocard/sale"])
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
 
         # 총 판매 가격
         instance.total_price = instance.price + instance.fee
-        # 조회된 포토카드 id의 최근 판매완료 내역
+        # 조회된 포토카드 id의 최근(5개) 판매완료 내역
         instance.price_history = SaleHistory.objects.filter(
-            state="E", photo_card_id=instance.photo_card_id
+            state="E", 
+            photo_card_id=instance.photo_card_id
         ).order_by("-sold_date")[:5]
         serializer = self.get_serializer(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -21,7 +21,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = AccountManager()
 
     EMAIL_FIELD = "email"
-    # REQUIRED_FIELDS = ["email"]
     USERNAME_FIELD = "email"
 
     class Meta:
@@ -57,3 +56,6 @@ class UserWallet(models.Model):
     cash = models.PositiveIntegerField(default=10000, help_text="사용가능 금액")
 
     update_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.email
