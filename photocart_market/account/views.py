@@ -10,11 +10,19 @@ from .serializers import LoginSerializer, RegisterSerializer
 
 
 class RegisterAPIView(generics.CreateAPIView):
+    """
+    회원가입
+    """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
 
 class LoginAPIView(generics.GenericAPIView):
+    """
+    로그인
+    - jwt 토큰 생성 (access/refresh)
+    - 생성된 토큰은 cookie로 전달
+    """
     queryset = User.objects.all()
     serializer_class = LoginSerializer
 

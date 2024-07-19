@@ -3,8 +3,15 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+from .models import User, UserWallet
 
+@admin.register(UserWallet)
+class UserWalletAdmin(admin.ModelAdmin):
+    list_display = [
+        "user",
+        "cash",
+        "update_date"
+    ]
 
 @admin.register(User)
 class AccountAdmin(UserAdmin):

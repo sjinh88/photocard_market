@@ -7,3 +7,6 @@ class PhotoCard(models.Model):
     description = models.TextField()
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
