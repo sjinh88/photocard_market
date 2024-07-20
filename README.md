@@ -21,7 +21,8 @@
 - **photocard_market**:
   - Django의 프로젝트 및 앱 구조를 따릅니다.
   - `startapp` 또는 `startproject`로 생성된 디렉토리 구조입니다.
-  - 코드 컨벤션은 `black`, `isort` 패키지를 사용하여 통일화되어 있습니다.
+  - `코드 컨벤션`은 `black`, `isort` 패키지를 사용하여 통일화되어 있습니다.
+  - `pagenation 처리`는 `CursorPagination`를 기반으로 합니다.
   - 기본적으로 해당 프로젝트는 아래와 같은 기획을 기준으로 작성되었습니다.
     1. 관리자는 인증된 포토카드를 앱에 등록합니다.
     2. 인증된 포토카드는 앱 내에서 판매가 가능합니다.
@@ -65,7 +66,8 @@
 
   접근 상태  METHOD       PATH                    DESCRIPTION
 - 모든 유저   POST  account/register                회원 가입
-- 모든 유저   POST  account/login                   로그인    
+- 모든 유저   POST  account/login                   로그인   
+- 인증 유저   GET   account/wallet                  유저 지갑 조회 
 
 - 인증 유저   GET   photocard/buy/list              유저가 구매중인 or 구매한 포토카드 목록 조회
 - 인증 유저   PUT   photocard/buy/register/{id}     포토카드 구매 신청

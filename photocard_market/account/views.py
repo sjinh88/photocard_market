@@ -1,12 +1,14 @@
 from django.contrib.auth import authenticate
 from django.utils import timezone
-from rest_framework import exceptions, generics, status
+from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User
-from .serializers import LoginSerializer, RegisterSerializer
+from .models import User, UserWallet
+from .serializers import (LoginSerializer, RegisterSerializer,
+                          UserWalletSerializer)
 
 
 class RegisterAPIView(generics.CreateAPIView):
@@ -57,3 +59,17 @@ class LoginAPIView(generics.GenericAPIView):
         response.set_cookie(key="refresh", value=str(token), httponly=True)
 
         return response
+
+
+class UserWalletAPIVIew(generics.RetrieveAPIView):
+
+    queryset = UserWallet.objects.all()
+    serializer_class = UserWalletSerializer
+    permission_classes = [IsAuthenticated]
+
+    lookup_field = "user_id"
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_queryset().get(user_id=request.user.id)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

@@ -1,9 +1,9 @@
 from account.models import UserWallet
+from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.db.transaction import atomic
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import exceptions, generics, status
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sale.enums import State
@@ -52,7 +52,7 @@ class BuyRegisterAPIView(generics.UpdateAPIView):
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(state=State.BEGIN, buyer=request.user)
-        
+
         # wallet 금액 반영
         uw_instance.cash -= instance.price + instance.fee
         uw_instance.save()
@@ -147,7 +147,7 @@ class BuyEndAPIView(generics.UpdateAPIView):
             buyer=request.user,
             sold_date=timezone.now(),
         )
-        # 판매자 cach 추가
+        # 판매자 cash 추가
         uw_instance = UserWallet.objects.get(user_id=instance.seller.id)
         uw_instance.cash += instance.price + instance.fee
         uw_instance.save()
