@@ -11,7 +11,7 @@ class SaleHistory(models.Model):
         PhotoCard, related_name="photocard", on_delete=models.DO_NOTHING
     )
     buyer = models.ForeignKey(
-        User, related_name="buy_user", on_delete=models.DO_NOTHING, null=True
+        User, related_name="buy_user", on_delete=models.DO_NOTHING, null=True, blank=True
     )
     seller = models.ForeignKey(
         User, related_name="sale_user", on_delete=models.DO_NOTHING
@@ -26,7 +26,7 @@ class SaleHistory(models.Model):
 
     create_date = models.DateTimeField(auto_now_add=True)
     renewal_date = models.DateTimeField(auto_now_add=True)
-    sold_date = models.DateTimeField(null=True)
+    sold_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = [
