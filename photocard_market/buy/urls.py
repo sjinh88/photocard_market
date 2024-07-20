@@ -5,8 +5,8 @@ from .views import (BuyCancelAPIView, BuyEndAPIView, BuyListAPIView,
                     BuyRegisterAPIView)
 
 urlpatterns = [
-    path("register/<int:pk>", BuyRegisterAPIView.as_view(), name="photocard-buy"),
-    path("cancel/<int:pk>", BuyCancelAPIView.as_view(), name="photocard-buy-cancel"),
-    path("end/<int:pk>", BuyEndAPIView.as_view(), name="photocard-buy-end"),
-    path("list", BuyListAPIView.as_view(), name="photocard-buy-list"),
+    path("register/<int:pk>", BuyRegisterAPIView.as_view(), name="photocard_buy"),
+    path("cancel/<int:pk>", BuyCancelAPIView.as_view(), name="photocard_buy_cancel"),
+    path("end/<int:pk>", BuyEndAPIView.as_view(), name="photocard_buy_end"),
+    path("list", BuyListAPIView.as_view(), name="photocard_buy_list"),
 ]

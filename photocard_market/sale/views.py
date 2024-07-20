@@ -103,21 +103,22 @@ class SaleListAPIView(generics.ListAPIView):
             .annotate(
                 rnk=Window(
                     expression=RowNumber(),
-                    partition_by=[F("photo_card_id"), F("price")],
+                    partition_by=[F("photo_card_id")],
                     order_by=[F("photo_card_id"), F("price"), F("renewal_date")],
                 )
             )
             .filter(Q(rnk=1))
         )
-        qs = self.filter_queryset(qs)
 
         # pagenation 처리
         page = self.paginate_queryset(qs)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
+            print("serializer :", serializer.data)
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(qs, many=True)
+        print("serializer :", serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

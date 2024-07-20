@@ -2,7 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import User
+from .models import User, UserWallet
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -73,3 +73,11 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError({"user": "휴먼 계정입니다."})
 
         return value
+
+
+class UserWalletSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source="user.email")
+
+    class Meta:
+        model = UserWallet
+        exclude = ["id", "update_date"]
