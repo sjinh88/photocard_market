@@ -2,6 +2,7 @@ from account.models import UserWallet
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.db.transaction import atomic
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -147,6 +148,7 @@ class BuyEndAPIView(generics.UpdateAPIView):
             buyer=request.user,
             sold_date=timezone.now(),
         )
+
         # 판매자 cash 추가
         uw_instance = UserWallet.objects.get(user_id=instance.seller.id)
         uw_instance.cash += instance.price + instance.fee
