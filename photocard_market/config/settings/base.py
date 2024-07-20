@@ -42,6 +42,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_yasg",
+    "django_filters",
 ]
 
 API_APPS = [
@@ -180,4 +181,5 @@ SWAGGER_SETTINGS = {
 SALE_LIST_LIMIT = 5
 
 import os
+
 STATIC_ROOT = os.path.join("staticfiles")

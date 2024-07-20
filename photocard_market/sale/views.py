@@ -11,12 +11,8 @@ from rest_framework.response import Response
 
 from .enums import State
 from .models import SaleHistory
-from .serializers import (
-    SaleDetailSerializer,
-    SaleHistorySerializer,
-    SalePriceUpdateSerializer,
-    SaleResigterSerializer,
-)
+from .serializers import (SaleDetailSerializer, SaleHistorySerializer,
+                          SalePriceUpdateSerializer, SaleResigterSerializer)
 from .utils import fee_calculate
 
 
