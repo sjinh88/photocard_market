@@ -1,12 +1,8 @@
 # users/urls.py
 from django.urls import path
 
-from .views import (
-    SaleDetailView,
-    SaleListAPIView,
-    SalePriceUpdateAPIView,
-    SaleRegisterAPIView,
-)
+from .views import (SaleDetailView, SaleListAPIView, SalePriceUpdateAPIView,
+                    SaleRegisterAPIView)
 
 urlpatterns = [
     path("list", SaleListAPIView.as_view(), name="sale-list"),

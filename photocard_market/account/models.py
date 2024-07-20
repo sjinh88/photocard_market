@@ -32,23 +32,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.email = self.__class__.objects.normalize_email(self.email)
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+# class UserProfile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    phone_number = models.CharField(
-        unique=True, max_length=13, null=False, help_text="핸드폰 번호"
-    )
-    nickname = models.CharField(
-        unique=True, max_length=13, null=False, help_text="닉네임"
-    )
+#     phone_number = models.CharField(
+#         unique=True, max_length=13, null=False, help_text="핸드폰 번호"
+#     )
+#     nickname = models.CharField(
+#         unique=True, max_length=13, null=False, help_text="닉네임"
+#     )
 
-    create_date = models.DateTimeField(auto_now_add=True, help_text="생성 일자")
-    update_date = models.DateTimeField(auto_now=True, help_text="정보 변경 일자")
+#     create_date = models.DateTimeField(auto_now_add=True, help_text="생성 일자")
+#     update_date = models.DateTimeField(auto_now=True, help_text="정보 변경 일자")
 
-    class Meta:
-        indexes = [
-            models.Index(fields=["-create_date"]),
-        ]
+#     class Meta:
+#         indexes = [
+#             models.Index(fields=["-create_date"]),
+#         ]
 
 
 class UserWallet(models.Model):
