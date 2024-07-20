@@ -1,6 +1,7 @@
 from account.models import UserWallet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.db.transaction import atomic
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import exceptions, generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -23,6 +24,7 @@ class BuyRegisterAPIView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(tags=["photocard/buy"])
+    @atomic
     def put(self, request, *args, **kwargs):
         instance = get_object_or_404(self.queryset, id=kwargs["pk"])
         # 판매 상태 체크
@@ -50,6 +52,7 @@ class BuyRegisterAPIView(generics.UpdateAPIView):
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(state=State.BEGIN, buyer=request.user)
+        
         # wallet 금액 반영
         uw_instance.cash -= instance.price + instance.fee
         uw_instance.save()
@@ -72,6 +75,7 @@ class BuyCancelAPIView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(tags=["photocard/buy"])
+    @atomic
     def put(self, request, *args, **kwargs):
         instance = get_object_or_404(self.queryset, id=kwargs["pk"])
         # 거래 상태 체크
@@ -117,6 +121,7 @@ class BuyEndAPIView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(tags=["photocard/buy"])
+    @atomic
     def put(self, request, *args, **kwargs):
         instance = get_object_or_404(self.queryset, id=kwargs["pk"])
         # 거래 상태 체크
@@ -142,6 +147,10 @@ class BuyEndAPIView(generics.UpdateAPIView):
             buyer=request.user,
             sold_date=timezone.now(),
         )
+        # 판매자 cach 추가
+        uw_instance = UserWallet.objects.get(user_id=instance.seller.id)
+        uw_instance.cash += instance.price + instance.fee
+        uw_instance.save()
 
         return Response(status=status.HTTP_200_OK)
 
