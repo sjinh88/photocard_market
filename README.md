@@ -1,18 +1,18 @@
 ## 프로젝트 구성
-  infra/
-      dev/
-          app/
-          nginx/
-          uwsgi/
-      prod/
-  photocard_market/
-      account/
-      buy/
-      config/
-      product/
-      sale/
-  manage.py
-  docker-compose-dev.yaml
+        infra/
+            dev/
+                app/
+                nginx/
+                uwsgi/
+            prod/
+        photocard_market/
+            account/
+            buy/
+            config/
+            product/
+            sale/
+        manage.py
+        docker-compose-dev.yaml
 
 - **infra**:
   - 운영 환경(dev, prod)별로 구성되며, 각각 `app`, `nginx`, `uwsgi` 디렉토리로 나뉘어 필요한 파일을 포함합니다.
